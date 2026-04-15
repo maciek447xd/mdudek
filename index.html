@@ -1,54 +1,769 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>ElectroShop - Koszyk Sklepowy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .products-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .products-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #price-filter {
+            flex: 1;
+            min-width: 150px;
+            height: 35px;
+            cursor: pointer;
+        }
+
+        #price-value {
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        #category-filter {
+            padding: 8px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .product-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .product h3 {
+            color: #333;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .product-category {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .product button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .product button:hover {
+            background: #5568d3;
+        }
+
+        .cart-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .cart-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .cart-items {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            min-height: 100px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 10px;
+        }
+
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            padding: 0;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .quantity-btn:hover {
+            background: #5568d3;
+        }
+
+        .cart-item-total {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 70px;
+            text-align: right;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .remove-btn:hover {
+            background: #ee5a52;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-cart-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .cart-summary {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+
+        .summary-row.total {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            border: none;
+            margin-top: 10px;
+        }
+
+        .discount-section {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        #discount-code {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        #apply-discount {
+            padding: 8px 15px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #apply-discount:hover {
+            background: #38a169;
+        }
+
+        #discount-info {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 8px;
+            background: #c3dafe;
+            border-radius: 3px;
+            color: #1e3a8a;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .cart-buttons {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn-success {
+            width: 100%;
+            padding: 15px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a52;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-section {
+                position: static;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            .product-list {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            #price-filter {
+                width: 100%;
+            }
+
+            #category-filter {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Shopping Cart</h1>
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Products</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="products">
-            <h2>Products</h2>
-            <div class="product">
-                <h3>Product 1</h3>
-                <p>Price: $199.99</p>
-                <button>Add to Cart</button>
-            </div>
-            <div class="product">
-                <h3>Product 2</h3>
-                <p>Price: $299.99</p>
-                <button>Add to Cart</button>
-            </div>
-            <div class="product">
-                <h3>Product 3</h3>
-                <p>Price: $399.99</p>
-                <button>Add to Cart</button>
-            </div>
-        </section>
-        <section id="cart">
-            <h2>Your Cart</h2>
-            <ul>
-                <li>Product 1 - $199.99</li>
-                <li>Product 2 - $299.99</li>
-                <li>Product 3 - $399.99</li>
-            </ul>
-            <p>Total: $899.97</p>
-            <button>Checkout</button>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Electronics E-commerce</p>
-    </footer>
+    <div class="container">
+        <header>
+            <h1>🔌 ElectroShop</h1>
+            <p>Koszyk Elektroniki</p>
+        </header>
+
+        <div class="main-wrapper">
+            <section class="products-section">
+                <h2>Dostępne Produkty</h2>
+                
+                <div class="filters">
+                    <input type="range" id="price-filter" min="0" max="5000" value="5000" placeholder="Filtruj po cenie">
+                    <span id="price-value">Max cena: 5000 zł</span>
+                    <select id="category-filter">
+                        <option value="">Wszystkie kategorie</option>
+                        <option value="laptop">Laptopy</option>
+                        <option value="phone">Telefony</option>
+                        <option value="accessories">Akcesoria</option>
+                        <option value="audio">Audio</option>
+                    </select>
+                </div>
+
+                <div id="product-list" class="product-list"></div>
+            </section>
+
+            <section class="cart-section">
+                <h2>🛒 Twój Koszyk</h2>
+                <div id="cart-items" class="cart-items"></div>
+                
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Ilość produktów:</span>
+                        <span id="cart-count">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Cena bez rabatu:</span>
+                        <span id="subtotal">0.00 zł</span>
+                    </div>
+                    
+                    <div class="discount-section">
+                        <input type="text" id="discount-code" placeholder="Kod rabatowy">
+                        <button id="apply-discount">Zastosuj rabat</button>
+                        <span id="discount-info"></span>
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>RAZEM:</span>
+                        <span id="total-price">0.00 zł</span>
+                    </div>
+                </div>
+
+                <div class="cart-buttons">
+                    <button id="checkout" class="btn-success">💳 Przejdź do kasy</button>
+                    <button id="clear-cart" class="btn-danger">🗑️ Wyczyść koszyk</button>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 ElectroShop | Projekt szkolny - JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "MacBook Pro 16\"", category: "laptop", price: 4999, icon: "💻" },
+            { id: 2, name: "iPhone 15 Pro", category: "phone", price: 4499, icon: "📱" },
+            { id: 3, name: "Samsung Galaxy S24", category: "phone", price: 3999, icon: "📱" },
+            { id: 4, name: "Dell XPS 13", category: "laptop", price: 3499, icon: "💻" },
+            { id: 5, name: "Sony WH-1000XM5", category: "audio", price: 1799, icon: "🎧" },
+            { id: 6, name: "AirPods Pro Max", category: "audio", price: 2299, icon: "🎧" },
+            { id: 7, name: "USB-C Kabel", category: "accessories", price: 99, icon: "🔌" },
+            { id: 8, name: "Ładowarka Szybka", category: "accessories", price: 299, icon: "⚡" },
+            { id: 9, name: "iPad Air 11\"", category: "phone", price: 2299, icon: "📟" },
+            { id: 10, name: "Magic Mouse 2", category: "accessories", price: 599, icon: "🖱️" },
+            { id: 11, name: "Lenovo ThinkPad", category: "laptop", price: 2999, icon: "💻" },
+            { id: 12, name: "Google Pixel 8", category: "phone", price: 3499, icon: "📱" }
+        ];
+
+        const discountCodes = {
+            "ELEKTRO20": { percentage: 20, description: "Rabat 20%" },
+            "SUMMER10": { percentage: 10, description: "Rabat 10% lato" },
+            "WELCOME15": { percentage: 15, description: "Rabat powitalny 15%" },
+            "VIPMAX": { percentage: 30, description: "VIP - 30%" }
+        };
+
+        class ShoppingCart {
+            constructor() {
+                this.items = this.loadFromStorage();
+                this.appliedDiscount = null;
+            }
+
+            addItem(product) {
+                const existingItem = this.items.find(item => item.id === product.id);
+                
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    this.items.push({ ...product, quantity: 1 });
+                }
+                
+                this.saveToStorage();
+            }
+
+            removeItem(productId) {
+                this.items = this.items.filter(item => item.id !== productId);
+                this.saveToStorage();
+            }
+
+            changeQuantity(productId, newQuantity) {
+                const item = this.items.find(item => item.id === productId);
+                if (item && newQuantity > 0) {
+                    item.quantity = newQuantity;
+                    this.saveToStorage();
+                } else if (newQuantity <= 0) {
+                    this.removeItem(productId);
+                }
+            }
+
+            getSubtotal() {
+                return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            }
+
+            applyDiscount(code) {
+                if (discountCodes[code.toUpperCase()]) {
+                    this.appliedDiscount = discountCodes[code.toUpperCase()];
+                    return true;
+                }
+                return false;
+            }
+
+            getDiscountAmount() {
+                if (!this.appliedDiscount) return 0;
+                return (this.getSubtotal() * this.appliedDiscount.percentage) / 100;
+            }
+
+            getTotal() {
+                return this.getSubtotal() - this.getDiscountAmount();
+            }
+
+            clear() {
+                this.items = [];
+                this.appliedDiscount = null;
+                this.saveToStorage();
+            }
+
+            saveToStorage() {
+                localStorage.setItem('cart', JSON.stringify({
+                    items: this.items,
+                    appliedDiscount: this.appliedDiscount
+                }));
+            }
+
+            loadFromStorage() {
+                const stored = localStorage.getItem('cart');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    this.appliedDiscount = data.appliedDiscount || null;
+                    return data.items || [];
+                }
+                return [];
+            }
+        }
+
+        const cart = new ShoppingCart();
+
+        function displayProducts(productsToDisplay = products) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+
+            if (productsToDisplay.length === 0) {
+                productList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #999;">Brak produktów spełniających kryteria</p>';
+                return;
+            }
+
+            productsToDisplay.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <div class="product-icon">${product.icon}</div>
+                    <h3>${product.name}</h3>
+                    <p class="product-category">${product.category}</p>
+                    <div class="product-price">${product.price.toFixed(2)} zł</div>
+                    <button onclick="addToCart(${product.id})">Dodaj do koszyka</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                cart.addItem(product);
+                updateCartDisplay();
+                showNotification(`✅ ${product.name} dodany do koszyka!`);
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart.removeItem(productId);
+            updateCartDisplay();
+        }
+
+        function changeQuantity(productId, quantity) {
+            cart.changeQuantity(productId, quantity);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const subtotal = document.getElementById('subtotal');
+            const totalPrice = document.getElementById('total-price');
+            const discountInfo = document.getElementById('discount-info');
+
+            cartItemsDiv.innerHTML = '';
+
+            if (cart.items.length === 0) {
+                cartItemsDiv.innerHTML = '<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Koszyk jest pusty</p></div>';
+                cartCount.textContent = '0';
+                subtotal.textContent = '0.00 zł';
+                totalPrice.textContent = '0.00 zł';
+                discountInfo.textContent = '';
+                return;
+            }
+
+            cart.items.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.icon} ${item.name}</div>
+                        <div class="cart-item-price">${item.price.toFixed(2)} zł / szt.</div>
+                    </div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn" onclick="changeQuantity(${item.id}, ${item.quantity - 1})">−</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="changeQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                    </div>
+                    <div class="cart-item-total">${(item.price * item.quantity).toFixed(2)} zł</div>
+                    <button class="remove-btn" onclick="removeFromCart(${item.id})">Usuń</button>
+                `;
+                cartItemsDiv.appendChild(cartItem);
+            });
+
+            cartCount.textContent = cart.items.length;
+            const subtotalAmount = cart.getSubtotal();
+            subtotal.textContent = subtotalAmount.toFixed(2) + ' zł';
+
+            if (cart.appliedDiscount) {
+                const discountAmount = cart.getDiscountAmount();
+                discountInfo.innerHTML = `
+                    ✅ Kod: <strong>${Object.keys(discountCodes).find(key => discountCodes[key] === cart.appliedDiscount)}</strong> 
+                    (-${discountAmount.toFixed(2)} zł)
+                `;
+            } else {
+                discountInfo.textContent = '';
+            }
+
+            totalPrice.textContent = cart.getTotal().toFixed(2) + ' zł';
+        }
+
+        document.getElementById('price-filter').addEventListener('input', (e) => {
+            const maxPrice = parseFloat(e.target.value);
+            document.getElementById('price-value').textContent = `Max cena: ${maxPrice} zł`;
+            applyFilters();
+        });
+
+        document.getElementById('category-filter').addEventListener('change', () => {
+            applyFilters();
+        });
+
+        function applyFilters() {
+            const maxPrice = parseFloat(document.getElementById('price-filter').value);
+            const category = document.getElementById('category-filter').value;
+
+            const filtered = products.filter(product => {
+                return product.price <= maxPrice && (category === '' || product.category === category);
+            });
+
+            displayProducts(filtered);
+        }
+
+        document.getElementById('apply-discount').addEventListener('click', () => {
+            const code = document.getElementById('discount-code').value.trim();
+
+            if (cart.items.length === 0) {
+                showNotification('❌ Koszyk jest pusty!');
+                return;
+            }
+
+            if (cart.applyDiscount(code)) {
+                showNotification(`✅ Kod rabatowy "${code}" zastosowany!`);
+                cart.saveToStorage();
+                updateCartDisplay();
+                document.getElementById('discount-code').value = '';
+            } else {
+                showNotification('❌ Nieprawidłowy kod rabatowy!');
+            }
+        });
+
+        document.getElementById('clear-cart').addEventListener('click', () => {
+            if (cart.items.length > 0 && confirm('Na pewno chcesz wyczyścić koszyk?')) {
+                cart.clear();
+                updateCartDisplay();
+                showNotification('🗑️ Koszyk wyczyszczony');
+            }
+        });
+
+        document.getElementById('checkout').addEventListener('click', () => {
+            if (cart.items.length === 0) {
+                showNotification('❌ Koszyk jest pusty!');
+                return;
+            }
+
+            const summary = `
+📋 PODSUMOWANIE ZAMÓWIENIA
+━━━━━━━━━━━━━━━━━━━━
+Ilość produktów: ${cart.items.length}
+Łączna wartość: ${cart.getSubtotal().toFixed(2)} zł
+${cart.appliedDiscount ? `Rabat: -${cart.getDiscountAmount().toFixed(2)} zł (${cart.appliedDiscount.percentage}%)` : ''}
+━━━━━━━━━━━━━━━━━━━━
+DO ZAPŁATY: ${cart.getTotal().toFixed(2)} zł
+━━━━━━━━━━━━━━━━━━━━
+Dziękujemy za zakupy!
+            `;
+            
+            alert(summary);
+            cart.clear();
+            updateCartDisplay();
+            showNotification('✅ Zamówienie złożone!');
+        });
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayProducts();
+            updateCartDisplay();
+        });
+    </script>
 </body>
 </html>
